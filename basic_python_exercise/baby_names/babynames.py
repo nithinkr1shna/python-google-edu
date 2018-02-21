@@ -8,6 +8,7 @@
 
 import sys
 import re
+import os
 
 """Baby Names exercise
 
@@ -63,6 +64,23 @@ def find_rank_and_name(lines):
 	return name_and_rank
 
 
+#extarcts each years baby names
+def extract_each_names_to_stdout(arguments):
+	for each in arguments:
+		print extract_names(each)
+		print "\n"
+
+
+#write summary files
+def generate_summary_files(filename, name_and_rank_list):
+	with open("summary/"+filename+".summary",'w') as f:
+		for name_and_rank in name_and_rank_list:
+			f.write(name_and_rank + os.linesep)
+
+#iterates over each files and creates summary on each files
+def extract_each_names_with_summary(arguments):
+	for each in arguments:
+		generate_summary_files(each, extract_names(each))
 
 
 
@@ -80,6 +98,7 @@ def extract_names(filename):
   return result
 
 
+
 def main():
   # This command-line parsing code is provided.
   # Make a list of command line arguments, omitting the [0] element
@@ -94,13 +113,20 @@ def main():
   # Notice the summary flag and remove it from args if it is present.
   summary = False
   if args[0] == '--summaryfile':
-    summary = True
-    del args[0]
+  	print "writing summary files"
+  	os.makedirs("summary") #create summary directory
+  	summary = True
+  	del args[0]
 
   # +++your code here+++
   # For each filename, get the names, then either print the text output
   # or write it to a summary file
-  print extract_names(sys.argv[1])
+
+  #iterating over each file in passed as command line argument
+  if summary:
+  	extract_each_names_with_summary(args)
+  else:
+  	extract_each_names_to_stdout(args)
   
 if __name__ == '__main__':
   main()
