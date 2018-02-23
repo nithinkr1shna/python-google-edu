@@ -19,21 +19,21 @@ Here's what a puzzle url looks like:
 """
 #find lines with puzzle in it
 def read_puzzle(filename):
-	sever_name = get_server_name(filename)
 	puzzles = []
 	with open(filename, 'r') as f:
 		for line in f:
 			if 'puzzle' in line:
-				puzzles.append(filename+line)
+				puzzles.append(line)
 	return puzzles
 
-#get all image urls without server name
-def get_urls(puzzles):
+#get all image urls with server name
+def get_urls(puzzles, filename):
+	server_name = get_server_name(filename)
 	urls =[]
 	url = re.compile(r'(GET\s*[a-z\/.-]*)')
 	for puzzle in puzzles:
 		get_url = re.findall(url, puzzle)
-		urls.append(get_url[0].split(" ")[1])
+		urls.append("http://"+server_name + get_url[0].split(" ")[1])
 
 	return urls
 
@@ -60,7 +60,7 @@ def read_urls(filename):
   Screens out duplicate urls and returns the urls sorted into
   increasing order."""
   # +++your code here+++
-  return remove_duplicates(sorted(get_urls(read_puzzle(filename))))
+  return remove_duplicates(sorted(get_urls(read_puzzle(filename), filename)))
   
   
 
