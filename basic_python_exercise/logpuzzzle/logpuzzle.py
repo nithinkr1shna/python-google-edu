@@ -30,10 +30,12 @@ def read_puzzle(filename):
 def get_urls(puzzles, filename):
 	server_name = get_server_name(filename)
 	urls =[]
-	url = re.compile(r'(GET\s*[a-z\/.-]*)')
+	url_pattern = re.compile(r'(GET\s*[a-z\/.-]*)')
 	for puzzle in puzzles:
-		get_url = re.findall(url, puzzle)
-		urls.append("http://"+server_name + get_url[0].split(" ")[1])
+		unformated_url = re.findall(url_pattern, puzzle)
+		url = unformated_url[0].split(" ")[1]
+		if url.endswith(".jpg"):
+			urls.append("http://"+server_name + url)
 
 	return urls
 
@@ -62,6 +64,31 @@ def read_urls(filename):
   # +++your code here+++
   return remove_duplicates(sorted(get_urls(read_puzzle(filename), filename)))
   
+def get_image_and_move(img_urls, dest_dir):
+	image_no = 0
+	os.makedirs(dest_dir)
+	for url in img_urls:
+		image_path = urllib.urlretrieve(url)[0]
+		to_dir = dest_dir+"/img"+str(image_no)+".jpg"
+		print "retrieved image to: ", image_path
+		print "moving: ", image_path, ">>", to_dir
+		os.system("mv {} {}".format(image_path, to_dir))
+		image_no += 1
+
+	return image_no
+
+def create_index_file(images_count, dest_dir):
+	with open("index.html", 'w') as f:
+		f.write("<html>\n<body>")
+		for i in xrange(0, images_count ):
+			img_location = "img{}".format(i) +".jpg"
+			f.write("<img src ={}>".format(img_location))
+		f.write("</body>\n</html>")
+
+	os.system("mv index.html {}".format(dest_dir+"/"+"index.html"))
+	
+
+
   
 
 def download_images(img_urls, dest_dir):
@@ -73,7 +100,8 @@ def download_images(img_urls, dest_dir):
   Creates the directory if necessary.
   """
   # +++your code here+++
-  
+  image_count = get_image_and_move(img_urls, dest_dir)
+  create_index_file(image_count, dest_dir)
 
 def main():
   args = sys.argv[1:]
