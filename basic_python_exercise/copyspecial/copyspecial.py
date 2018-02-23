@@ -19,6 +19,11 @@ import commands
 # Write functions and modify main() to call them
 
 #recursive
+
+
+#--------------------------------------------------------------
+#-------------- file path manipulation-------------------------
+
 def all_files_in_dir(directory):
 	files = []
 	for dirpath, dirnames, filenames in os.walk(directory):
@@ -40,6 +45,40 @@ def special_files(args):
 		print abs_path+"/"+i
 
 
+#--------------------------------------------------------------
+#---------------File copying-----------------------------------
+
+def copy_to(src, dest):
+	os.makedirs(dest)
+	if src[0] == '.':
+		for dirpath, dirnames, files in os.walk(src[0]):
+			print files, dest, os.getcwd()
+			shutil.copy(os.getcwd()+"/"+files, os.getcwd()+"/"+dest)
+			break
+		
+	else:
+		for files in os.listdir(src[0]):
+			print files, dest, os.getcwd()
+			shutil.copy(os.getcwd()+"/"+src[0]+"/"+files, os.getcwd()+"/"+dest)
+
+
+#---------------------------------------------------------------
+#---------------- To zip ---------------------------------------
+def to_zip(src , to):
+	if src == '.':
+		all_files =""
+		for x, y, filenames in os.walk(os.getcwd()):
+			files = filenames
+		for file in files:
+			all_files+=" "+file+" "
+		print all_files
+		result = commands.getoutput('zip {} {}'.format(to,all_files))
+	else:
+		result = commands.getoutput('zip {} {}'.format(to,src))
+	return result
+
+
+
 def main():
   # This basic command line argument parsing code is provided.
   # Add code to call your functions below.
@@ -59,10 +98,18 @@ def main():
   tozip = ''
   if args[0] == '--todir':
     todir = args[1]
+    print todir
     del args[0:2]
+    src = args
+    copy_to(src, todir)
+
   elif args[0] == '--tozip':
     tozip = args[1]
     del args[0:2]
+    print tozip, args
+    print to_zip(args[0],tozip)
+    #zip file action
+
   elif len(args) == 0:
     print "error: must specify one or more dirs"
     sys.exit(1)
