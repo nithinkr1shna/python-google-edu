@@ -19,11 +19,12 @@ Here's what a puzzle url looks like:
 """
 #find lines with puzzle in it
 def read_puzzle(filename):
+	sever_name = get_server_name(filename)
 	puzzles = []
 	with open(filename, 'r') as f:
 		for line in f:
 			if 'puzzle' in line:
-				puzzles.append(line)
+				puzzles.append(filename+line)
 	return puzzles
 
 #get all image urls without server name
@@ -35,6 +36,9 @@ def get_urls(puzzles):
 		urls.append(get_url[0].split(" ")[1])
 
 	return urls
+
+def get_server_name(logfile):
+	return logfile.split("_")[1]
 
 #remove duplicates from the url list
 def remove_duplicates(urls):
